@@ -1,6 +1,9 @@
 #include <omp.h>
 #include <tbb/tbb.h>
 #include <iostream>
+#include "Image.h"
+
+using namespace imgr;
 
 int main(int argc, char* argv[]) {
     std::cout << "Welcome to Imagerio!\n";
@@ -13,6 +16,8 @@ int main(int argc, char* argv[]) {
     // TODO: create a validation of CLI args to choose between different
 
     // TODO: create a file reader for Images (stb_image.h library or smth)
+    Image img("./exmp.jpg");
+    img.print_stats();
 
     // TODO: create switch (or just default pass) to one of the filters in filter directory
 
