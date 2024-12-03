@@ -1,3 +1,5 @@
 # Ignoring default directory for builds
 build/
 
+# Ignoring OS_X stuff
+.DS_Store
