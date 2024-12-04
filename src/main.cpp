@@ -3,8 +3,7 @@
 #include <iostream>
 #include <string>
 #include "Image.h"
-
-using namespace imgr;
+#include "filters/GaussianBlur.h"
 
 enum flags
 {
@@ -25,6 +24,7 @@ int main(int argc, char* argv[]) {
     std::string filter = "";
     bool earlyexit = false;
 
+    // TODO: Exit early if there are no args passed (for now it's good as we're testing things only)
     for (int x = 1; x < argc; x++) {
         int flag = starts_with("-o", argv[x]) * o +
             (starts_with("-f", argv[x]) || starts_with("-filter", argv[x])) * f +
@@ -57,13 +57,31 @@ int main(int argc, char* argv[]) {
     if (earlyexit) {
         return 0;
     }
-    // TODO: create a file reader for Images (stb_image.h library or smth)
-    Image img("./exmp.jpg");
-    img.print_stats();
-    img.write();
-    img.write(outputfile);
-    // TODO: create switch (or just default pass) to one of the filters in filter directory
 
-    // TODO: create a file writer for images (default file out for now).
+    // TODO: finish with validation in the image class for read and write. 
+    imgr::Image img("./exmp.jpg");
+    imgr::Image img_copy = img;
+
+    // TODO: create switch (or just default pass) to one of the filters in filter directory
+    img.print_stats();
+    auto start = std::chrono::high_resolution_clock::now();
+    imgr::GaussianBlur::apply_gaussian_blur(img);
+    auto end = std::chrono::high_resolution_clock::now();
+    img.print_stats();
+    std::cout << "Time for gaussian blur: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
+              << "\n";
+
+    start = std::chrono::high_resolution_clock::now();
+    imgr::GaussianBlur::apply_gaussian_blur_parallel(img_copy);
+    end = std::chrono::high_resolution_clock::now();
+    img_copy.print_stats();
+    std::cout << "Time for gaussian blur parallel: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
+              << "\n";
+
+    img.write("./exmp-blurred.jpg");
+    img_copy.write("./exmp-blurred-parallel.jpg");
+
     return 0;
 }
