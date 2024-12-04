@@ -23,6 +23,7 @@ int main(int argc, char* argv[]) {
     std::string outputfile = "./";
     std::string imagefile = "";
     std::string filter = "";
+    bool earlyexit = false;
 
     for (int x = 1; x < argc; x++) {
         int flag = starts_with("-o", argv[x]) * o +
@@ -31,12 +32,14 @@ int main(int argc, char* argv[]) {
             (starts_with("-i", argv[x]) || starts_with("-image", argv[x])) * i;
         if (flag == 0 && x == 1) {
             std::cout << "Invaild Input enter -h or -help if you need help\n";
+            earlyexit = true;
             break;
         }
         switch (flag)
         {
         case o: outputfile = outputfile + argv[x + 1]; break;
         case f: filter = filter + argv[x + 1]; break;
+        case i: imagefile = imagefile + argv[x + 1]; break;
         case h: std::cout 
             << "usage: imagerio  [<option>] [<input>] ... [<option>] [<input>] \n\n"
             << "The following options are available :\n\n"
@@ -45,13 +48,15 @@ int main(int argc, char* argv[]) {
             << " -h or -help       list of commmands \n"
             << " -i or -image      image file name and path example: ./folder/image.png or C:\\Users\\WindowsUser\\Pictures\\image.png \n"
             << " -p or -parllel    set the program to use multi-threading \n\n";
+            earlyexit = true;
             break;
-        case i: imagefile = imagefile + argv[x + 1]; break;
         default:
             break;
         }
     }
-
+    if (earlyexit) {
+        return 0;
+    }
     // TODO: create a file reader for Images (stb_image.h library or smth)
     Image img("./exmp.jpg");
     img.print_stats();
