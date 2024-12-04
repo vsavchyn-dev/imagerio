@@ -18,7 +18,8 @@ int main(int argc, char* argv[]) {
     // TODO: create a file reader for Images (stb_image.h library or smth)
     Image img("./exmp.jpg");
     img.print_stats();
-
+    img.write();
+    img.write("./exmp-copy2.jpg");
     // TODO: create switch (or just default pass) to one of the filters in filter directory
 
     // TODO: create a file writer for images (default file out for now).
