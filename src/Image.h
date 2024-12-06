@@ -82,7 +82,7 @@ namespace imgr {
 
             uint8_t* loaded_data =
                 stbi_load(m_file_path.c_str(), &m_width, &m_height, &m_channels,
-                          STBI_rgb_alpha);
+                          STBI_default);
 
             if (loaded_data == nullptr) {
                 std::cerr << "Error by reading a file!\n";
@@ -128,8 +128,9 @@ namespace imgr {
             // return;
 
             if (ends_with(path, ".png")) {
+                int stride = m_width * m_channels;
                 stbi_write_png(path.c_str(), m_width, m_height, m_channels,
-                               m_data.data(), m_width * m_height);
+                               m_data.data(), stride);
             } else if (ends_with(path, ".jpg") || ends_with(path, ".jpeg")) {
                 stbi_write_jpg(path.c_str(), m_width, m_height, m_channels,
                                m_data.data(), 100);
