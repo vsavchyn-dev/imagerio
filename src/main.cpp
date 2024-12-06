@@ -159,6 +159,7 @@ int main(int argc, char* argv[]) {
             break;
         case filters_enum::grayscale:
             parallel_impl ? imgr::GrayScale::grayscaleImageParallel(og_img) : imgr::GrayScale::grayscaleImage(og_img);
+            break;
         default:
             std::cout << "Unhandeled filter!!!! \n";
             break;
