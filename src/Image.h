@@ -130,7 +130,7 @@ namespace imgr {
             if (ends_with(path, ".png")) {
                 stbi_write_png(path.c_str(), m_width, m_height, m_channels,
                                m_data.data(), m_width * m_height);
-            } else if (ends_with(path, ".jpg")) {
+            } else if (ends_with(path, ".jpg") || ends_with(path, ".jpeg")) {
                 stbi_write_jpg(path.c_str(), m_width, m_height, m_channels,
                                m_data.data(), 100);
             } else {
