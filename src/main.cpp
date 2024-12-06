@@ -4,11 +4,14 @@
 #include <string>
 #include "Image.h"
 #include "filters/GaussianBlur.h"
+#include "filters/GrayScale.h"
 
 enum flags
 {
     e, o, f, h, i, p
 };
+
+
 
 int main(int argc, char* argv[]) {
     std::cout << "Welcome to Imagerio!\n";
@@ -37,9 +40,9 @@ int main(int argc, char* argv[]) {
         }
         switch (flag)
         {
-        case o: outputfile = outputfile + argv[x + 1]; break;
-        case f: filter = filter + argv[x + 1]; break;
-        case i: imagefile = imagefile + argv[x + 1]; break;
+        case o: outputfile.append(argv[x + 1]); break;
+        case f: filter.append(argv[x + 1]); break;
+        case i: imagefile.append(argv[x + 1]); break;
         case h: std::cout 
             << "usage: imagerio  [<option>] [<input>] ... [<option>] [<input>] \n\n"
             << "The following options are available :\n\n"
@@ -59,8 +62,10 @@ int main(int argc, char* argv[]) {
     }
 
     // TODO: finish with validation in the image class for read and write. 
-    imgr::Image img("./exmp.jpg");
+    imgr::Image img(imagefile);
     imgr::Image img_copy = img;
+    imgr::Image img_gray = img;
+    imgr::Image img_gray_para = img;
 
     // TODO: create switch (or just default pass) to one of the filters in filter directory
     img.print_stats();
@@ -80,8 +85,26 @@ int main(int argc, char* argv[]) {
               << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
               << "\n";
 
+    start = std::chrono::high_resolution_clock::now();
+    imgr::grayscaleImage(img_gray);
+    end = std::chrono::high_resolution_clock::now();
+    img_gray.print_stats();
+    std::cout << "Time for Grayscale: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
+              << "\n";
+
+    start = std::chrono::high_resolution_clock::now();
+    imgr::grayscaleImageParallel(img_gray_para);
+    end = std::chrono::high_resolution_clock::now();
+    img_gray.print_stats();
+    std::cout << "Time for Grayscale Parallel: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
+              << "\n";
+
     img.write("./exmp-blurred.jpg");
     img_copy.write("./exmp-blurred-parallel.jpg");
+    img_gray.write("./exmp-gray.jpg");
+    img_gray_para.write("./exmp-gray-parallel.jpg");
 
     return 0;
 }

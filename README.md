@@ -11,7 +11,7 @@ _**Applying filters to Images differently!**_
 
 ***REMOVED***
 ***REMOVED***
-  - ???
+***REMOVED***
 
 ## Installation
 
