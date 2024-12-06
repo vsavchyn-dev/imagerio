@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <string>
 #include "Image.h"
@@ -18,6 +19,7 @@ enum filters_enum
 const std::vector<std::string> valid_output_ext = {
     ".png",
     ".jpg",
+    ".jpeg",
 };
 
 const std::vector<std::string> valid_filters = {
@@ -105,8 +107,8 @@ int main(int argc, char* argv[]) {
             }
 
             break;
-        case i: 
-            if (is_valid_path(argv[x + 1]) && is_valid_extension(argv[x + 1], valid_output_ext)) {
+        case i:
+            if (std::fstream(argv[x + 1]).good() && is_valid_extension(argv[x + 1], valid_output_ext)) {
                 inputfile.append(argv[x + 1]); 
                 x += 2;
             }

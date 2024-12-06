@@ -1,4 +1,3 @@
-#include <cctype>
 #if __cplusplus < 202002L  // pre C++20
 #include <fstream>
 #include <string>
@@ -37,16 +36,7 @@ static bool starts_with(const std::string& str, const char* prefix) {
 }
 
 static bool is_valid_path(const std::string& path) {
-    bool flag = false;
-    // Check if path is empty
     if (path.empty())
-        return false;
-
-    // Check for invalid characters in path
-    const std::string invalid_chars = "\\/:*?\"<>|";
-    if (std::any_of(path.begin(), path.end(), [&invalid_chars](char c) {
-            return invalid_chars.find(c) != std::string::npos;
-        }))
         return false;
 
     try {
@@ -60,12 +50,10 @@ static bool is_valid_path(const std::string& path) {
     } catch (...) {
         return false;
     }
-    return flag;
 }
 
 static bool is_valid_extension(
     const std::string& path, const std::vector<std::string>& valid_extensions) {
-    // Check if path or valid_extensions are empty
     if (path.empty() || valid_extensions.empty())
         return false;
 

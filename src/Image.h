@@ -82,7 +82,7 @@ namespace imgr {
 
             uint8_t* loaded_data =
                 stbi_load(m_file_path.c_str(), &m_width, &m_height, &m_channels,
-                          m_channels);
+                          STBI_rgb_alpha);
 
             if (loaded_data == nullptr) {
                 std::cerr << "Error by reading a file!\n";
