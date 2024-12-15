@@ -5,12 +5,14 @@
 #include "Image.h"
 #include "filters/GaussianBlur.h"
 #include "filters/GrayScale.h"
+#include "filters/KuwaharaFilter.h"
 
 enum flags { e = 1, o, f, h, i, p };
 
 enum filters_enum {
     gaussian_blur = 0,
     grayscale,
+    kuwahara,
 };
 
 const std::vector<std::string> valid_output_ext = {
@@ -22,6 +24,7 @@ const std::vector<std::string> valid_output_ext = {
 const std::vector<std::string> valid_filters = {
     "gaussian_blur",
     "grayscale",
+    "kuwahara",
 };
 
 int main(int argc, char* argv[]) {
@@ -44,6 +47,7 @@ int main(int argc, char* argv[]) {
                   << "\tsupported modes:\n"
                   << "\t\t gaussian_blur - blur image with gaussian blur\n"
                   << "\t\t grayscale     - make image gray\n"
+                  << "\t\t kuwahara      - kuwahara filter\n"
                   << "\t-h or -help       list of commmands \n"
                   << "\t-i or -image      image file name and path example: "
                      "./folder/image.png or "
@@ -179,6 +183,9 @@ int main(int argc, char* argv[]) {
         case filters_enum::grayscale:
             parallel_impl ? imgr::GrayScale::grayscaleImageParallel(og_img)
                           : imgr::GrayScale::grayscaleImage(og_img);
+            break;
+        case filters_enum::kuwahara:
+            imgr::KuwaharaFilter::apply_kuwara_filter(og_img);
             break;
         default:
             std::cout << "Unhandeled filter!!!! \n";
