@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #define STBI_MALLOC(sz) malloc(sz)
 #define STBI_REALLOC(p, newsz) realloc(p, newsz)
 #define STBI_FREE(p) free(p)
@@ -86,7 +87,6 @@ namespace imgr {
 
             if (loaded_data == nullptr) {
                 std::cerr << "Error by reading a file!\n";
-                delete[] loaded_data;
                 return;
             }
 
@@ -151,6 +151,94 @@ namespace imgr {
             m_name = other_img.m_name;
 
             return *this;
+        }
+
+        static void rgb_to_hsv(Image& image) {
+            if (image.m_data.empty()) {
+                std::cerr << "Empty image to convert to HSV!\n";
+                return;
+            }
+
+            for (size_t i = 0; i < image.m_data.size(); i += 3) {
+                const double r_prime =
+                    static_cast<double>(image.m_data[i]) / 255.0f;
+                const double g_prime =
+                    static_cast<double>(image.m_data[i + 1]) / 255.0;
+                const double b_prime =
+                    static_cast<double>(image.m_data[i + 2]) / 255.0;
+                const double c_max = std::max({r_prime, g_prime, b_prime});
+                const double c_min = std::min({r_prime, g_prime, b_prime});
+                const double diff = c_max - c_min;
+
+                double hue = 0.0;
+                double sat = (c_max == 0.0) ? 0.0 : (diff / c_max) * 100.0;
+                double val = c_max * 100.0;
+
+                if (c_max == r_prime) {
+                    hue = 60.0 * std::fmod((g_prime - b_prime) / diff, 6.0);
+                } else if (c_max == g_prime) {
+                    hue = 60.0 * (b_prime - r_prime) / diff + 2.0;
+                } else if (c_max == b_prime) {
+                    hue = 60.0 * (r_prime - g_prime) / diff + 4.0;
+                }
+
+                if (hue < 0)
+                    hue += 360.0;
+
+                image.m_data[i] = static_cast<uint8_t>(hue);
+                image.m_data[i + 1] = static_cast<uint8_t>(sat);
+                image.m_data[i + 2] = static_cast<uint8_t>(val);
+            }
+        }
+
+        static void hsv_to_rgb(Image& image) {
+            if (image.m_data.empty()) {
+                std::cerr << "Empty image to convert to RBG!\n";
+                return;
+            }
+
+            for (size_t i = 0; i < image.m_data.size(); i += 3) {
+                const double hue = static_cast<double>(image.m_data[i]);
+                const double sat = static_cast<double>(image.m_data[i + 1]);
+                const double val = static_cast<double>(image.m_data[i + 2]);
+
+                const double c = val * sat;
+                const double x =
+                    c * (1 - std::abs(std::fmod(hue / 60.0, 2.0) - 1));
+                const double m = val - c;
+
+                double r_prime = 0.0;
+                double g_prime = 0.0;
+                double b_prime = 0.0;
+
+                if (hue >= 0.0 && hue < 60.0) {
+                    r_prime = c;
+                    g_prime = x;
+                } else if (hue >= 60.0 && hue < 120.0) {
+                    r_prime = x;
+                    g_prime = c;
+                } else if (hue >= 120.0 && hue < 180.0) {
+                    g_prime = c;
+                    b_prime = x;
+                } else if (hue >= 180.0 && hue < 240.0) {
+                    g_prime = x;
+                    b_prime = c;
+                } else if (hue >= 240.0 && hue < 300.0) {
+                    r_prime = x;
+                    b_prime = c;
+                } else if (hue >= 300.0 && hue < 360.0) {
+                    r_prime = c;
+                    b_prime = x;
+                }
+
+                const uint8_t r = static_cast<uint8_t>((r_prime + m) * 255.0);
+                const uint8_t g = static_cast<uint8_t>((g_prime + m) * 255.0);
+                const uint8_t b = static_cast<uint8_t>((b_prime + m) * 255.0);
+
+                image.m_data[i] = r;
+                image.m_data[i + 1] = g;
+                image.m_data[i + 2] = b;
+            }
         }
 
         ~Image() {}
