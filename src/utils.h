@@ -1,3 +1,5 @@
+#pragma once
+
 #if __cplusplus < 202002L  // pre C++20
 #include <fstream>
 #include <string>
