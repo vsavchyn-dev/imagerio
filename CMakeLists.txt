@@ -17,7 +17,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -O2")
 
 # Find required packages
 find_package(OpenMP REQUIRED)
-find_package(TBB REQUIRED)
+find_package(TBB)
 
 # Collect all source files
 file(GLOB_RECURSE SOURCE_FILES
