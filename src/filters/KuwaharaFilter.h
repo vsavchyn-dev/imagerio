@@ -12,7 +12,7 @@ namespace imgr {
     class KuwaharaFilter {
     public:
         static void apply_kuwara_filter(imgr::Image& image,
-                                        int window_size = 5) {
+                                        int window_size = 7) {
             if (window_size < 5 || window_size % 2 == 0) {
                 std::cerr << "Invalid winsize " << window_size
                           << ": winsize must follow formula: w = 4*n+1.\n";
