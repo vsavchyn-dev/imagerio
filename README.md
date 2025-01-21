@@ -2,16 +2,10 @@
 
 _**Applying filters to Images differently!**_
 
-## Group #1 members
+## Contributors
 
-***REMOVED***
-
-***REMOVED***
-***REMOVED***
-
-***REMOVED***
-***REMOVED***
-***REMOVED***
+[Vladyslav Savchyn](https://github.com/vsavchyn-dev)
+[Omer Ibrahim](https://github.com/OmerAhmedIbrahim)
 
 ## Installation
 
