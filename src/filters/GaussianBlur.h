@@ -33,6 +33,44 @@ namespace imgr {
             return kernel;
         }
 
+        static std::pair<float, int> clalc_gaussian_params(
+            const Image& image, int min_kernel_size = 3,
+            int max_kernel_size = 0) {
+            float sigma = std::min(image.m_width, image.m_height) /
+                          (8.0 * image.m_channels);
+
+            sigma = std::round(sigma * 100.0) / 100.0;
+
+            int kernel_size = static_cast<int>(2 * std::ceil(3 * sigma) + 1);
+
+            kernel_size =
+                std::min(kernel_size,
+                         static_cast<int>(
+                             std::min(image.m_width, image.m_height) / 4.0));
+
+            if (max_kernel_size <= 0) {
+                // Use 1/4 of image size or a reasonable maximum
+                max_kernel_size = std::min(
+                    static_cast<int>(std::min(image.m_width, image.m_height) /
+                                     4),
+                    255  // Practical upper limit
+                );
+            }
+
+            if (kernel_size % 2 == 0) {
+                kernel_size++;
+            }
+
+            kernel_size = std::max(min_kernel_size,
+                                   std::min(kernel_size, max_kernel_size));
+
+            if (kernel_size % 2 == 0) {
+                kernel_size--;
+            }
+
+            return {sigma, kernel_size};
+        }
+
         static void apply_gaussian_blur(Image& img, float sigma = 1.5f,
                                         int kernel_size = 5) {
             if (kernel_size % 2 == 0) {
