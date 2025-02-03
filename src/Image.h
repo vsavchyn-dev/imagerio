@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef IMGR_IMAGE_H
+#define IMGR_IMAGE_H
+
 #include <cmath>
 #define STBI_MALLOC(sz) malloc(sz)
 #define STBI_REALLOC(p, newsz) realloc(p, newsz)
@@ -17,9 +20,6 @@
 #include <string>
 #include <vector>
 #include "utils.h"
-
-#ifndef IMGR_IMAGE_H
-#define IMGR_IMAGE_H
 
 namespace imgr {
 

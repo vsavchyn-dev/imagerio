@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef IMGR_FILTER_KUWAHARA_H
+#define IMGR_FILTER_KUWAHARA_H
+
 #include <omp.h>
 #include <cmath>
 #include <iostream>
@@ -124,3 +127,5 @@ namespace imgr {
         }
     };
 }  // namespace imgr
+
+#endif  // !IMGR_FILTER_KUWAHARA_H

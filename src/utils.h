@@ -1,8 +1,12 @@
 #pragma once
 
-#if __cplusplus < 202002L  // pre C++20
+#ifndef UTILS_H
+#define UTILS_H
+
 #include <fstream>
 #include <string>
+
+#if __cplusplus < 202002L  // pre C++20
 
 static bool ends_with(const std::string& str, const std::string& suffix) {
     return str.size() >= suffix.size() &&
@@ -73,4 +77,6 @@ static bool is_valid_extension(
 
     return false;
 }
-#endif
+#endif  // !__cplusplus < 202002L
+
+#endif  // !UTILS_H

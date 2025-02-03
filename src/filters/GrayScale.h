@@ -1,5 +1,12 @@
-#ifndef IMAGERIO_IMAGE_FILTERS_APPLIER_GRAYSCALE_H
-#define IMAGERIO_IMAGE_FILTERS_APPLIER_GRAYSCALE_H
+#pragma once
+
+#ifndef IMGR_FILTER_GRAYSCALE_H
+#define IMGR_FILTER_GRAYSCALE_H
+
+#include <omp.h>
+#include <cmath>
+#include <iostream>
+#include <vector>
 #include "../Image.h"
 
 namespace imgr {
@@ -49,4 +56,4 @@ namespace imgr {
     };
 }  // namespace imgr
 
-#endif  //IMAGERIO_IMAGE_FILTERS_APPLIER_GRAYSCALE_H
+#endif  // !IMGR_FILTER_GRAYSCALE_H
