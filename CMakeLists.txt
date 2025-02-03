@@ -11,9 +11,17 @@ set(TARGET_NAME imagerio)
 # Enable compile commands export for tooling support
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Optimization and warning flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -O2")
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -O0")
+# Set different compiler flags for Debug and Release builds
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+  # Debug-specific flags
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -g")
+
+  # Add DEBUG_PRINT macro for debug builds
+  add_definitions(-DDEBUG_PRINT)
+elseif(CMAKE_BUILD_TYPE MATCHES Release)
+  # Release-specific optimization flags
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -DNDEBUG -flto")
+endif()
 
 # Find required packages
 find_package(OpenMP REQUIRED)
