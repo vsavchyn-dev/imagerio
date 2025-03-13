@@ -22,25 +22,56 @@ namespace imgr {
                 return;
             }
 
+            // NOTE: is this neccessary?
             if (image.m_channels < 1) {
                 std::cerr << "Image has no channels to process.\n";
                 return;
             }
 
             // imgr::Image::rgb_to_hsv(image);
+
+            // NOTE: maybe remove it and require gaussian blur? aka just kuwahara filter on it's own
             imgr::GaussianBlur::apply_gaussian_blur_parallel(image, 2.0, 11);
 
             Image filtered_image = image;
 
-            const size_t window_size_half = window_size / 2;
-            const size_t num_regions =
-                (window_size == 5) ? 4 : ((window_size == 7) ? 9 : 16);
-            const size_t num_regions_sqrt = std::sqrt(num_regions);
-            const size_t region_size = window_size / num_regions_sqrt;
+            int window_size_half = 0;
+            int num_regions = 0;
+            int num_regions_sqrt = 0;
+            int region_size = 0;
 
-            for (size_t y = window_size_half;
+            switch (window_size) {
+                case 5:
+                    window_size_half = 2;
+                    num_regions = 4;
+                    num_regions_sqrt = 2;
+                    break;
+                case 7:
+                    window_size_half = 3;
+                    num_regions = 9;
+                    num_regions_sqrt = 5;
+                    break;
+                default:
+                    window_size_half = window_size / 2;
+                    num_regions = 16;
+                    num_regions_sqrt = 4;
+                    break;
+            }
+            region_size = window_size / num_regions_sqrt;
+
+            // const size_t window_size_half = window_size / 2;
+            // const size_t num_regions =
+            //     (window_size == 5) ? 4 : ((window_size == 7) ? 9 : 16);
+            // const size_t num_regions_sqrt = std::sqrt(num_regions);
+
+            std::cout << "computed values:\n"
+                      << window_size << "," << window_size_half << ","
+                      << num_regions << "," << num_regions_sqrt << ","
+                      << region_size << "\n";
+
+            for (int y = window_size_half;
                  y < image.m_height - window_size_half; y++) {
-                for (size_t x = window_size_half;
+                for (int x = window_size_half;
                      x < image.m_width - window_size_half; x++) {
                     std::vector<std::vector<double>> means(
                         num_regions,
@@ -49,26 +80,25 @@ namespace imgr {
                         num_regions,
                         std::vector<double>(image.m_channels, 0.0));
 
-                    size_t region_idx = 0;
+                    int region_idx = 0;
 
-                    for (size_t dy = 0; dy < num_regions_sqrt; dy++) {
-                        for (size_t dx = 0; dx < num_regions_sqrt; dx++) {
-                            size_t start_region_x =
+                    for (int dy = 0; dy < num_regions_sqrt; dy++) {
+                        for (int dx = 0; dx < num_regions_sqrt; dx++) {
+                            int start_region_x =
                                 x - window_size_half + dx * region_size;
-                            size_t start_region_y =
+                            int start_region_y =
                                 y - window_size_half + dy * region_size;
 
                             std::vector<double> sums(image.m_channels, 0.0);
                             std::vector<double> sums_squared(image.m_channels,
                                                              0.0);
 
-                            for (size_t py = start_region_y;
+                            for (int py = start_region_y;
                                  py < start_region_y + region_size; py++) {
-                                for (size_t px = start_region_x;
+                                for (int px = start_region_x;
                                      px < start_region_x + region_size; px++) {
-                                    const size_t idx =
-                                        (py * image.m_width + px) *
-                                        image.m_channels;
+                                    const int idx = (py * image.m_width + px) *
+                                                    image.m_channels;
 
                                     for (int channel = 0;
                                          channel < image.m_channels;
@@ -96,9 +126,9 @@ namespace imgr {
                         }
                     }
 
-                    size_t best_region = 0;
+                    int best_region = 0;
                     double min_vatriance = std::numeric_limits<double>::max();
-                    for (size_t i = 0; i < num_regions; i++) {
+                    for (int i = 0; i < num_regions; i++) {
                         double total_variance = 0.0;
                         for (int channel = 0; channel < image.m_channels;
                              channel++) {
@@ -110,7 +140,7 @@ namespace imgr {
                         }
                     }
 
-                    size_t filtered_idx =
+                    int filtered_idx =
                         (y * image.m_width + x) * image.m_channels;
 
                     for (int channel = 0; channel < image.m_channels;
