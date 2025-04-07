@@ -29,8 +29,6 @@ class KuwaharaFilter {
       return;
     }
 
-    // imgr::Image::rgb_to_hsv(image);
-
     // NOTE: maybe remove it and require gaussian blur? aka just kuwahara filter
     // on it's own
     imgr::GaussianBlur::apply_gaussian_blur_parallel(image, 2.0, 11);
@@ -51,7 +49,7 @@ class KuwaharaFilter {
     case 7:
       window_size_half = 3;
       num_regions = 9;
-      num_regions_sqrt = 5;
+      num_regions_sqrt = 3;
       break;
     default:
       window_size_half = window_size / 2;
@@ -136,8 +134,6 @@ class KuwaharaFilter {
     }
 
     image = filtered_image;
-
-    // imgr::Image::hsv_to_rgb(image);
   }
 };
 }  // namespace imgr
