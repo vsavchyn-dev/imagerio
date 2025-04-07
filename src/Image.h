@@ -69,8 +69,6 @@ struct Image {
       return;
     }
 
-    // TODO: check name ext - throw error if wrong.
-
     m_file_path = path;
 
     size_t pos_for_name = path.find_last_of('/');
@@ -115,14 +113,13 @@ struct Image {
 
       path = name_str + copy_str + extension_str;
 
+#  ifdef DEBUG_PRINT
       std::cout << "\tDot index: " << dot_idx << "\n"
                 << "\tName: " << name_str << "\n"
                 << "\tExtension: " << extension_str << "\n"
                 << "\tNew name var: " << path << "\n";
+#  endif
     }
-
-    // TODO: check ext to write -> throw error if smth wrong/show that we had
-    // problems return;
 
     if (ends_with(path, ".png")) {
       int stride = m_width * m_channels;
