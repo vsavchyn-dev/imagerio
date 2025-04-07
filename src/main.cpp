@@ -16,12 +16,14 @@ enum filters_enum {
   kuwahara,
 };
 
+// TODO: Change to array or std::array of strings (add overload utils.h)
 const std::vector<std::string> valid_output_ext = {
     ".png",
     ".jpg",
     ".jpeg",
 };
 
+// TODO: Change to array or std::array of strings (add overload to utils.h)
 const std::vector<std::string> valid_filters = {
     "gaussian_blur",
     "grayscale",
@@ -31,12 +33,15 @@ const std::vector<std::string> valid_filters = {
 int main(int argc, char* argv[]) {
   std::cout << "Welcome to Imagerio!\n";
 
+#ifdef DEBUG_PRINT
   std::cout << "Here are CLI args to this tool:\n";
   for (int i = 0; i < argc; i++) {
     std::cout << "\t" << argv[i] << "\n";
   }
+#endif  // !DEBUG_PRINT
 
   if (argc == 1) {
+    // TODO: Change order of help things, add mandatory -i
     std::cout << "No input file provided to program...\n"
               << "usage: imagerio  [<option>] [<input>] ... [<option>] "
                  "[<input>] \n\n"
@@ -82,7 +87,7 @@ int main(int argc, char* argv[]) {
             flags::p;
 
     if (flag == 0) {
-      std::cout << "Invaild Input enter -h or -help if you need help\n";
+      std::cerr << "Invaild Input enter -h or -help if you need help\n";
       earlyexit = true;
 
       break;
@@ -95,7 +100,7 @@ int main(int argc, char* argv[]) {
         outputfile = argv[x + 1];
         x += 2;
       } else {
-        std::cout << "Output path is invalid or extension is not "
+        std::cerr << "Output path is invalid or extension is not "
                      "one of possible ones!\n";
         earlyexit = true;
       }
@@ -113,7 +118,7 @@ int main(int argc, char* argv[]) {
         const size_t idx = std::distance(valid_filters.begin(), iter);
         filter = filters_enum(idx);
       } else {
-        std::cout << "Invalid filter name! Using Gaussian Blur as "
+        std::cerr << "Invalid filter name! Using Gaussian Blur as "
                      "default\n";
       }
 
@@ -125,18 +130,22 @@ int main(int argc, char* argv[]) {
         inputfile.append(argv[x + 1]);
         x += 2;
       } else {
-        std::cout << "File is invalid!\n";
+        std::cerr << "File is invalid!\n";
         earlyexit = true;
       }
 
       break;
     case flags::p:
-      std::cout << "Using parallel impl\n";
-      parallel_impl = true;
+      if (!parallel_impl) {
+        std::cout << "Using parallel impl\n";
+        parallel_impl = true;
+      }
+
       x += 1;
 
       break;
     case flags::h:
+      // TODO: Change order of help things, add mandatory -i
       std::cout << "usage: imagerio  [<option>] [<input>] ... [<option>] "
                    "[<input>] \n\n"
                 << "The following options are available :\n\n"
@@ -154,7 +163,7 @@ int main(int argc, char* argv[]) {
 
       break;
     default:
-      std::cout << "Wrong argument - check -help for help!\n";
+      std::cerr << "Wrong argument - check -help for help!\n";
       earlyexit = true;
 
       break;
@@ -165,12 +174,18 @@ int main(int argc, char* argv[]) {
     return -1;
   }
 
+  // TODO: Need to check inputfile string and exit on non-existent file or empty
+  // string
   imgr::Image og_img(inputfile);
 
+#ifdef DEBUG_PRINT
   og_img.print_stats();
-  auto start = std::chrono::high_resolution_clock::now();
-  // make decision based on filter
+  std::chrono::time_point start = std::chrono::high_resolution_clock::now();
+
   std::cout << "Filter: " << filter << "\n";
+#endif  // !DEBUG_PRINT
+
+  // make decision based on filter
   switch (filter) {
   case filters_enum::gaussian_blur:
     parallel_impl ? imgr::GaussianBlur::apply_gaussian_blur_parallel(og_img)
@@ -183,65 +198,17 @@ int main(int argc, char* argv[]) {
   case filters_enum::kuwahara:
     imgr::KuwaharaFilter::apply_kuwara_filter(og_img);
     break;
-  default: std::cout << "Unhandeled filter!!!! \n"; break;
+  default: std::cerr << "Unhandeled filter!!!! \n"; break;
   }
-  auto end = std::chrono::high_resolution_clock::now();
+
+#ifdef DEBUG_PRINT
+  std::chrono::time_point end = std::chrono::high_resolution_clock::now();
   std::cout << "Time for image processing: "
             << std::chrono::duration_cast<std::chrono::milliseconds>(end -
                                                                      start)
                    .count()
             << "\n";
+#endif  // !DEBUG_PRINT
 
   og_img.write(outputfile);
-
-  /*
-  // TODO: finish with validation in the image class for read and write.
-  imgr::Image img(imagefile);
-  imgr::Image img_copy = img;
-  imgr::Image img_gray = img;
-  imgr::Image img_gray_para = img;
-
-  // TODO: create switch (or just default pass) to one of the filters in filter
-  directory img.print_stats(); auto start =
-  std::chrono::high_resolution_clock::now();
-  imgr::GaussianBlur::apply_gaussian_blur(img);
-  auto end = std::chrono::high_resolution_clock::now();
-  img.print_stats();
-  std::cout << "Time for gaussian blur: "
-            << std::chrono::duration_cast<std::chrono::milliseconds>(end -
-  start).count()
-            << "\n";
-
-  start = std::chrono::high_resolution_clock::now();
-  imgr::GaussianBlur::apply_gaussian_blur_parallel(img_copy);
-  end = std::chrono::high_resolution_clock::now();
-  img_copy.print_stats();
-  std::cout << "Time for gaussian blur parallel: "
-            << std::chrono::duration_cast<std::chrono::milliseconds>(end -
-  start).count()
-            << "\n";
-
-  start = std::chrono::high_resolution_clock::now();
-  imgr::grayscaleImage(img_gray);
-  end = std::chrono::high_resolution_clock::now();
-  img_gray.print_stats();
-  std::cout << "Time for Grayscale: "
-            << std::chrono::duration_cast<std::chrono::milliseconds>(end -
-  start).count()
-            << "\n";
-
-  start = std::chrono::high_resolution_clock::now();
-  imgr::grayscaleImageParallel(img_gray_para);
-  end = std::chrono::high_resolution_clock::now();
-  img_gray.print_stats();
-  std::cout << "Time for Grayscale Parallel: "
-            << std::chrono::duration_cast<std::chrono::milliseconds>(end -
-  start).count()
-            << "\n";
-
-  img.write("./exmp-blurred.jpg");
-  img_copy.write("./exmp-blurred-parallel.jpg");
-  img_gray.write("./exmp-gray.jpg");
-  img_gray_para.write("./exmp-gray-parallel.jpg");
-  */
 }
